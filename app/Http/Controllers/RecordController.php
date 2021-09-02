@@ -41,33 +41,18 @@ class RecordController extends Controller
                              ->get();
         $search = trim($request->search);
         $dataRecordTypes = DB::table('record_types')
-                             ->orderBy('id')
+                             ->orderBy('order_no')
                              ->get();
-        $dataAnnouncement = $this->getRecords(0, 1, 'search', $search);
-        $dataMemo = $this->getRecords(0, 2, 'search', $search);
-        $dataSO = $this->getRecords(0, 3, 'search', $search);
-        $dataTO = $this->getRecords(0, 4, 'search', $search);
-        $dataGuidelines = $this->getRecords(0, 5, 'search', $search);
-        $dataPolicies = $this->getRecords(0, 6, 'search', $search);
-        $dataReports = $this->getRecords(0, 7, 'search', $search);
-        $dataForms = $this->getRecords(0, 8, 'search', $search);
-        $dataManCom = $this->getRecords(0, 9, 'search', $search);
-        $dataInfoMaterials = $this->getRecords(0, 10, 'search', $search);
-        $dataOtherReports = $this->getRecords(0, 11, 'search', $search);
-        $dataRecords = [$dataAnnouncement, 
-                        $dataMemo, 
-                        $dataSO, 
-                        $dataTO,
-                        $dataGuidelines, 
-                        $dataPolicies, 
-                        $dataReports, 
-                        $dataForms,
-                        $dataManCom,
-                        $dataInfoMaterials,
-                        $dataOtherReports];
+        $dataRecords = [];
 
-        return view('pages.view-search-record', ['recordTypes' => $dataRecordTypes,
-                                                 'records' => $dataRecords]);
+        foreach ($dataRecordTypes as $datRecType) {
+            $dataRecords[] = $this->getRecords(0, $datRecType->id, 'search', $search);
+        }
+
+        return view('pages.view-search-record', [
+            'recordTypes' => $dataRecordTypes,
+            'records' => $dataRecords
+        ]);
     }
 
     public function showView(Request $request, $_type) {

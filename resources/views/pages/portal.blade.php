@@ -155,7 +155,7 @@
                                             <td class="table-txt">{{ $record->title }}</td>
                                             <td class="table-txt">{{ $record->subject }}</td>
                                             <td class="table-txt text-center">
-                                                {{ $record->date_due != '0000-00-00' ? $record->date_due: 'N/a' }}
+                                                {{ ($record->date_due == '0000-00-00' || !$record->date_due) ? 'N/a' : $record->date_due }}
                                             </td>
                                             <td class="table-txt">{{ $record->remarks }}</td>
                                             <td class="table-txt">{{ $record->user }}</td>
