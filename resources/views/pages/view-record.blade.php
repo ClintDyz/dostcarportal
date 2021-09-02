@@ -1,6 +1,6 @@
 <form class="wow animated fadeIn pl-3 pr-3 pt-0 m-0">
     <div class="md-form form-sm mt-0 mb-2 float-right">
-        @if (Auth::user())
+        @if (Auth::user() && Auth::user()->role != 3)
         <button type="button" class="btn btn-link btn-lg p-2 orange-text"
                 onclick="$(this).showEdit('{{ $id }}', 'record', '{{ $type }}')">
             <i class="far fa-edit"></i> Edit
