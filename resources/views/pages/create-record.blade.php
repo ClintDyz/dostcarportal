@@ -8,11 +8,13 @@
                 <input class="custom-file-input" id="attachment" name="attachment[]" 
                        aria-describedby="attachment" type="file" multiple>
                 <label class="custom-file-label" for="attachment">
-                    <i class="fas fa-file-import"></i> Choose attachments
+                    <i class="fas fa-file-import"></i> Choose file attachments
                 </label>
             </div>
         </div>
     </div>
+
+    <select name="url_attachment[]" id="url-attachment" multiple="multiple"></select>
 
     <div class="md-form form-sm">
         <i class="{{ $recordType->fa_icon }} prefix"></i>

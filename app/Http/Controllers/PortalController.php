@@ -30,7 +30,7 @@ class PortalController extends Controller
     {
         $firstRecordTypeID = 0;
         $dataRecordTypes = DB::table('record_types')
-                             ->orderBy('id')
+                             ->orderBy('order_no')
                              ->get();
         $dataAnnouncement = [];//$this->getRecords(1);
         /*
@@ -126,14 +126,16 @@ class PortalController extends Controller
             }
         }
 
-        return view('pages.portal', ['firstRecordType' => $firstRecordTypeID,
-                                     'recordTypes' => $dataRecordTypes,
-                                     'records' => $dataAnnouncement,
-                                     'memos' => $dataTraceMemo,
-                                     'infosysMain' => $dataInfoSys_Main,
-                                     'infosysSpecProj' => $dataInfoSys_SpecProj,
-                                     'infosysOthers' => $dataInfoSys_Others,
-                                     'infosysBackEnd' => $dataInfoSys_BackEnd]);
+        return view('pages.portal', [
+            'firstRecordType' => $firstRecordTypeID,
+            'recordTypes' => $dataRecordTypes,
+            'records' => $dataAnnouncement,
+            'memos' => $dataTraceMemo,
+            'infosysMain' => $dataInfoSys_Main,
+            'infosysSpecProj' => $dataInfoSys_SpecProj,
+            'infosysOthers' => $dataInfoSys_Others,
+            'infosysBackEnd' => $dataInfoSys_BackEnd
+        ]);
     }
 
     private function getRecords($type) {

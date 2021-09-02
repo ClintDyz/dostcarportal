@@ -74,6 +74,7 @@ class RecordsController extends Controller
         $id = $request->id;
         $recordType = RecordType::where('id', $_type)->first();
         $dataRecord = $this->getRecords($id, $_type, 'this');
+        $attachURLs = array_filter(explode('|', $dataRecord->url_attachment));
         $attachDirectories = array_filter(explode(';', $dataRecord->attachment));
         $attachments = [];
 
@@ -85,18 +86,22 @@ class RecordsController extends Controller
             }
         }
 
-        return view('pages.view-record', ['type' => $_type,
-                                          'id' => $id,
-                                          'recordType' => $recordType,
-                                          'title' => $dataRecord->title,
-                                          'subject' => $dataRecord->subject,
-                                          'recType' => $dataRecord->type,
-                                          'remarks' => $dataRecord->remarks,
-                                          'dateDue' => $dataRecord->date_due,
-                                          'attachment' => $dataRecord->attachment,
-                                          'postedBy' => $dataRecord->user,
-                                          'createdAt' => $dataRecord->created_at,
-                                          'attachments' => $attachments]);
+        return view('pages.view-record', [
+            'type' => $_type,
+            'id' => $id,
+            'recordType' => $recordType,
+            'title' => $dataRecord->title,
+            'subject' => $dataRecord->subject,
+            'recType' => $dataRecord->type,
+            'remarks' => $dataRecord->remarks,
+            'dateDue' => $dataRecord->date_due,
+            'attachment' => $dataRecord->attachment,
+            'attachmentURL' => $dataRecord->url_attachment,
+            'postedBy' => $dataRecord->user,
+            'createdAt' => $dataRecord->created_at,
+            'attachments' => $attachments,
+            'attachmentURLs' => $attachURLs,
+        ]);
     }
 
     public function showCreateForm($type) {
@@ -118,6 +123,7 @@ class RecordsController extends Controller
         $recordTypes = RecordType::all();
         $dataRecord = $this->getRecords($id, $_type, 'this');
         $attachDirectories = array_filter(explode(';', $dataRecord->attachment));
+        $attachURLs = array_filter(explode('|', $dataRecord->url_attachment));
         $attachments = [];
 
         foreach ($attachDirectories as $key => $directory) {
@@ -128,17 +134,21 @@ class RecordsController extends Controller
             }
         }
 
-        return view('pages.edit-record', ['type' => $_type,
-                                          'id' => $id,
-                                          'recordType' => $recordType,
-                                          'recordTypes' => $recordTypes,
-                                          'title' => $dataRecord->title,
-                                          'subject' => $dataRecord->subject,
-                                          'recType' => $dataRecord->type,
-                                          'remarks' => $dataRecord->remarks,
-                                          'dateDue' => $dataRecord->date_due,
-                                          'attachment' => $dataRecord->attachment,
-                                          'attachments' => $attachments]);
+        return view('pages.edit-record', [
+            'type' => $_type,
+            'id' => $id,
+            'recordType' => $recordType,
+            'recordTypes' => $recordTypes,
+            'title' => $dataRecord->title,
+            'subject' => $dataRecord->subject,
+            'recType' => $dataRecord->type,
+            'remarks' => $dataRecord->remarks,
+            'dateDue' => $dataRecord->date_due,
+            'attachment' => $dataRecord->attachment,
+            'attachmentURL' => $dataRecord->url_attachment,
+            'attachments' => $attachments,
+            'attachmentURLs' => $attachURLs
+        ]);
     }
 
     public function store(Request $request, $type) {
@@ -152,8 +162,9 @@ class RecordsController extends Controller
             $record->subject = $request->record_subject;
             $record->record_type = $type;
             $record->remarks = $request->record_remarks;
-            $record->date_due = $request->record_date_due;
+            $record->date_due = $request->record_date_due ? $request->record_date_due : NULL;
             $record->posted_by = Auth::user()->emp_id;
+            $record->url_attachment = $request->url_attachment ? implode('|', $request->url_attachment) : NULL;
             $attachment = $request->file('attachment');
             $msg = 'Record added "' . strtoupper($request->record_title) . '".';
             
@@ -180,8 +191,9 @@ class RecordsController extends Controller
             $record->subject = $request->record_subject;
             $record->record_type = $request->record_type;
             $record->remarks = $request->record_remarks;
-            $record->date_due = $request->record_date_due;
+            $record->date_due = $request->record_date_due ? $request->record_date_due : NULL;
             $record->posted_by = Auth::user()->emp_id;
+            $record->url_attachment = $request->url_attachment ? implode('|', $request->url_attachment) : NULL;
             $attachment = $request->file('attachment');
             $msg = 'Record updated "' . strtoupper($request->record_title) . '".';
 
@@ -246,7 +258,7 @@ class RecordsController extends Controller
                          ->select('rec.id', 'rec.title', 'rec.subject','rec.date_due', 'rec.remarks', 
                                   DB::raw("concat(firstname, ' ', lastname) as user"),
                                   'rec.record_type', 'rec.attachment', 'rec.created_at', 
-                                  'rec_typ.type')
+                                  'rec_typ.type', 'rec.url_attachment')
                          ->join('users as us', 'us.id', '=', 'rec.posted_by')
                          ->join('record_types as rec_typ', 'rec_typ.id', '=', 'rec.record_type')
                          ->whereNull('rec.deleted_at');

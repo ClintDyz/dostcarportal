@@ -75,7 +75,7 @@
 <div class="md-form form-sm mt-0">
     <div class="well border p-2">
         @if (!empty($attachment))
-        <p>Attachment/s:</p>
+        <p>File Attachment/s:</p>
         @foreach($attachments as $fileCtr => $file)
         <a onclick="$(this).deleteAttachment('{{ $id }}', '{{ $file->filename }}', 
                                              'attachment-{{ $fileCtr }}');"
@@ -83,7 +83,19 @@
             Click to delete "{{ $file->filename }}"
         </a>
         @endforeach
-        @else
+        <hr>
+        @endif
+
+        <p>Link Attachment/s:</p>
+        <select name="url_attachment[]" id="url-attachment" multiple="multiple">
+            @if (count($attachmentURLs) > 0)
+                @foreach ($attachmentURLs as $url)
+            <option value="{{ $url }}" selected>{{ $url }}</option>        
+                @endforeach
+            @endif
+        </select>
+
+        @if (empty($attachment) && empty($attachmentURL))
         <p class="red-text">No attachment/s</p>
         @endif
     </div>

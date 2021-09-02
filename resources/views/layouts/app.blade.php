@@ -89,8 +89,11 @@
             $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
-    <script type="text/javascript" src="{{ asset('assets/js/app.js') }}"></script>
 
     @yield('custom-js')
+
+    {{--
+    <script type="text/javascript" src="{{ asset('assets/js/app.js') }}"></script>
+    --}}
 </body>
 </html>

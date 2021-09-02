@@ -45,9 +45,13 @@ class AccountController extends Controller
                          ->orderBy('lastname', 'asc')
                          ->whereNull('deleted_at')
                          ->paginate(30);
+        /*
         $genders = Gender::select('id', 'gender')
                               ->orderBy('id', 'asc')
-                              ->get();
+                              ->get();*/
+        $genders = [
+            '-', 'male', 'female'
+        ];
         $userTypes = UserType::select('id', 'type')
                               ->orderBy('id', 'asc')
                               ->get();

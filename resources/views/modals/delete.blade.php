@@ -14,10 +14,10 @@
                 </button>
             </div>
             <div class="modal-body text-center">
-                <i class="fas fa-times-circle fa-3x red-text mb-2"></i>
-                <h5>
+                <i class="fas fa-times-circle fa-3x red-text mb-4"></i>
+                <h6>
                     Are you sure you want to delete this data?
-                </h5>
+                </h6>
 
                 <form id="form-delete" method="POST">
                     {{ csrf_field() }}

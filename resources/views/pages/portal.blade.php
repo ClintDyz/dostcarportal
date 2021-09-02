@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('custom-css')
+
+<link rel="stylesheet" type="text/css" href="{{ asset('css/select2.min.css') }}">
+
+@endsection
+
 @section('content')
 
 <div class="card transparent mt-2">
@@ -88,12 +94,20 @@
                     </li>
 
                     @if (Auth::user() && Auth::user()->role != 3)
+                    <li class="nav-item ml-5">
+                        <a class="nav-link tab-text primary-color" id="tab-add-edit-record-types" 
+                           data-toggle="tab" href="#add-edit-record-types" role="tab" 
+                           aria-controls="add-edit-record-types"
+                           aria-selected="false">
+                            <strong><i class="fas fa-keyboard"></i> Add/Edit Types</strong>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link tab-text green" id="tab-add-record" 
                            data-toggle="tab" href="#add-record" role="tab" 
-                           aria-controls="other-records"
+                           aria-controls="add-records"
                            aria-selected="false">
-                            <strong><i class="fas fa-folder-plus"></i> Add</strong>
+                            <strong><i class="fas fa-folder-plus"></i> Add Record</strong>
                         </a>
                     </li>
                     @endif
@@ -181,12 +195,36 @@
                     </div>
 
                     @if (Auth::user())
+
+                    <!-- Add Record Types -->
+                    <div class="tab-pane fade" id="add-edit-record-types" 
+                         role="tabpanel" aria-labelledby="tab-add-edit-record-types">
+                        <div class="md-form m-0 p-3">
+                            <div class="md-form m-0 mt-3">
+                                <i class="fas fa-keyboard prefix"></i>
+                                <input type="text" id="record-type-title" name="record_title" class="form-control" required="">
+                                <label for="record-type-title" class="">
+                                    &nbsp;Record Type
+                                </label>
+                            </div> 
+                        </div>
+                        <hr class="m-0">
+                        <div class="table-responsive table-custom-height pl-5 pr-5 pt-3">
+                            <div id="add-edit-types-display" class="well">
+                                <p class="grey-text"> Existing Record Types</p>
+                            </div>
+                        </div>
+                        <button id="btn-add-edit-types" class="btn btn-success btn-md btn-block">
+                            <i class="fas fa-folder-plus"></i> Add
+                        </button>
+                    </div>
+
                     <!-- Add Records -->
                     <div class="tab-pane fade" id="add-record" 
                          role="tabpanel" aria-labelledby="tab-add-record">
-                        <div class="md-form m-0 p-3">
-                            <select id="sel-record-type" class="browser-default custom-select">
-                                <option value="0" selected>---- Select a record type ----</option>
+                        <div class="m-0 p-3">
+                            <select id="sel-record-type" class="w-100">
+                                <option value="0">---- Select a record type ----</option>
 
                                 @if (count($recordTypes) > 0)
                                     @foreach ($recordTypes as $rType)
@@ -215,10 +253,10 @@
 		</div>
 	</div>
 	<div class="col-xs-12 col-md-4">
-		<div class="card trans-blue-bg z-depth-1">
+		<div class="card trans-blue-bg z-depth-1 h-100">
 			<div class="card-body text-blue">
 				<div class="card-title text-white">
-					<strong><i class="fas fa-calendar-day"></i> Events</strong>
+					<strong><i class="fas fa-calendar-day"></i>  </strong>
 				</div>
 				<div class="table-responsive table-custom-height-2 white">
 					<table class="table table-hover table-bordered table-sm m-0">
@@ -248,7 +286,7 @@
                             @if (count($memos) > 0)
                                 @foreach ($memos as $itmCtr => $memo)
                             <tr>
-                                <td class="table-txt">{{ $itmCtr + 1 }}</td>
+                                <td class="table-txt text-center">{{ $itmCtr + 1 }}</td>
                                 <td class="table-txt">{{ $memo->event }}</td>
                                 <td class="table-txt">{{ $memo->type }}</td>
                                 <td class="table-txt">{{ $memo->startDate }}</td>
@@ -483,6 +521,12 @@
 @endsection
 
 @section('custom-js')
+    <script>
+        let recordTypes = {!! json_encode($recordTypes) !!};
+    </script>
+    <script type="text/javascript" src="{{ asset('js/select2.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/portal.js') }}"></script>
+
     @if (!empty(Session::get('success')))
         <script type="text/javascript">
             $(function() {

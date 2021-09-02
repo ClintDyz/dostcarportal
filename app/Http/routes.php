@@ -33,6 +33,14 @@ Route::group(['middlewareGroups' => ['web']], function () {
     Route::post('accounts/edit/{id}', 'AccountController@editAccount');
     Route::post('accounts/delete/{id}', 'AccountController@deleteAccount');
 
+    //Record Types
+    Route::get('record-types/show-create/{type}', 'RecordsController@showCreateForm');
+    Route::get('record-types/show-edit/{type}', 'RecordsController@showEditForm');
+    Route::post('record-types/store/{type}', 'RecordsController@store');
+    Route::post('record-types/update/{type}', 'RecordsController@update');
+    Route::post('record-types/delete/{id}', 'RecordsController@delete');
+    Route::post('record-types/delete-attachment/{id}', 'RecordsController@deleteAttachment');
+
     //Records
     Route::get('records/show-create/{type}', 'RecordsController@showCreateForm');
     Route::get('records/show-edit/{type}', 'RecordsController@showEditForm');

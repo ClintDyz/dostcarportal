@@ -29,6 +29,18 @@ $(function() {
 		$("#modal-delete").modal('hide');
 	}
 
+    function initSelect2Inputs() {
+        $('#url-attachment').select2({
+            width: '100%',
+            scrollAfterSelect: true,
+            placeholder: "  URL Attachments (Optional)",
+            tags: true,
+            escapeMarkup: function(m) { 
+                return m; 
+            }
+        });
+    }
+
 	function runRefreshRecordDisplay(elemID, url) {
 		$(elemID).html(modalLoadingContent)
 				 .load(url, function(response, status, xhr) {
@@ -57,88 +69,6 @@ $(function() {
 				}
 			});
 		}
-		
-		/*
-		switch (tabID) {
-			case 'tab-announcement':
-				elemIDs.push('#announcement-content');
-				urls.push('records/show-record/1');
-				break;
-			case 'tab-memo':
-				elemIDs.push('#memo-content');
-				urls.push('records/show-record/2');
-				break;
-			case 'tab-so':
-				elemIDs.push('#so-content');
-				urls.push('records/show-record/3');
-				break;
-			case 'tab-to':
-				elemIDs.push('#to-content');
-				urls.push('records/show-record/4');
-				break;
-			case 'tab-guidelines':
-				elemIDs.push('#guidelines-content');
-				urls.push('records/show-record/5');
-				break;
-			case 'tab-policies':
-				elemIDs.push('#policies-content');
-				urls.push('records/show-record/6');
-				break;
-			case 'tab-reports':
-				elemIDs.push('#reports-content');
-				urls.push('records/show-record/7');
-				break;
-			case 'tab-forms':
-				elemIDs.push('#forms-content');
-				urls.push('records/show-record/8');
-				break;
-			case 'tab-mancomrecords':
-				elemIDs.push('#mancomrecords-content');
-				urls.push('records/show-record/9');
-				break;
-			case 'tab-infomaterials':
-				elemIDs.push('#infomaterials-content');
-				urls.push('records/show-record/10');
-				break;
-			case 'tab-otherrecords':
-				elemIDs.push('#otherrecords-content');
-				urls.push('records/show-record/11');
-				break;
-			case 'all':
-				elemIDs.push('#announcement-content');
-				urls.push('records/show-record/1');
-				
-				elemIDs.push('#memo-content');
-				urls.push('records/show-record/2');
-
-				elemIDs.push('#so-content');
-				urls.push('records/show-record/3');
-
-				elemIDs.push('#to-content');
-				urls.push('records/show-record/4');
-
-				elemIDs.push('#guidelines-content');
-				urls.push('records/show-record/5');
-
-				elemIDs.push('#policies-content');
-				urls.push('records/show-record/6');
-
-				elemIDs.push('#reports-content');
-				urls.push('records/show-record/7');
-
-				elemIDs.push('#forms-content');
-				urls.push('records/show-record/8');
-
-				elemIDs.push('#mancomrecords-content');
-				urls.push('records/show-record/9');
-
-				elemIDs.push('#infomaterials-content');
-				urls.push('records/show-record/10');
-
-				elemIDs.push('#otherrecords-content');
-				urls.push('records/show-record/11');
-				break;
-		}*/
 
 		$.each(elemIDs, function(index, elemID) {
 			runRefreshRecordDisplay(elemID, urls[index])
@@ -156,7 +86,7 @@ $(function() {
 			$('#search-display').html('<div id="search-display" class="well">' +
 	                                  '<p class="grey-text"> Please fill-up the search field.</p>' +
 	                            	  '</div>');
-			$('#sel-record-type').val(0);
+			$('#sel-record-type').val(0).trigger('change');
 			createRecordForm(0);
 		}
 			
@@ -168,6 +98,50 @@ $(function() {
 	}
 
 	function createRecordForm(recordType) {
+		$('#add-record-display').load('records/show-create/' + recordType, function() {
+			const storeURL = $('#form-action').val();
+			const formValidator = $("#form-create-record").validate({
+				errorElement : 'div',
+				errorLabelContainer: '.error-msg',
+				rules: {
+			        record_title: {
+			            required: true
+			        },
+			        record_subject: {
+			            required: true
+			        }
+			    }
+			});
+
+			$('.custom-file-input').on('change', function() { 
+			   	const fileName = $(this).val().split('\\').pop(); 
+			   	$(this).next('.custom-file-label')
+			   		   .addClass("selected")
+			   		   .html('<i class="fas fa-image"></i> ' + fileName); 
+			   	//$('#btn-add-record').removeAttr('disabled');
+			});
+
+            initSelect2Inputs();
+
+			if (recordType == 0) {
+				$('#btn-add-edit-types').unbind('click').click(function() {
+				});
+				$('#btn-add-record').unbind('click').click(function() {
+				});
+			} else {
+				$('#btn-add-record').unbind('click').click(function() {
+					var isValid = formValidator.form();
+					var form = "#form-create-record";
+
+					if (isValid) {
+						storeProcess(form, storeURL, 'store', 'record');
+					}
+				});
+			}	
+		});
+	}
+
+    function createRecordTypeForm(recordType) {
 		$('#add-record-display').load('records/show-create/' + recordType, function() {
 			var storeURL = $('#form-action').val();
 			var formValidator = $("#form-create-record").validate({
@@ -197,14 +171,6 @@ $(function() {
 				$('#btn-add-record').unbind('click').click(function() {
 				});
 			} else {
-				$('#btn-add-edit-types').unbind('click').click(function() {
-					var isValid = formValidator.form();
-					var form = "#form-create-types";
-
-					if (isValid) {
-						storeProcess(form, storeURL, 'store', 'types');
-					}
-				});
 				$('#btn-add-record').unbind('click').click(function() {
 					var isValid = formValidator.form();
 					var form = "#form-create-record";
@@ -218,43 +184,6 @@ $(function() {
 	}
 
 	function storeProcess(form, url, toggle) {
-		/* // For AJAX Approach
-		var dataForm = new FormData($(form)[0]);
-		dataForm.append('_token', $('meta[name=csrf-token]').attr('content'));
-
-		$.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-            }
-        });
-		$.ajax({
-		    url: url,
-		    type: 'post',
-		    data: dataForm ? dataForm : dataForm.serialize(),
-		    contentType: false,
-    		processData: false,
-		    success: function(response) {
-		        $('#success-text').text(response);
-		    	$("#modal-success").modal();
-
-		        if (toggle == 'store') {
-					$("#modal-create").modal('hide');
-				} else {
-					$("#modal-edit").modal('hide');
-				}
-
-				refreshRecordDisplay('all');
-				refreshDefaults('all');
-		    },
-		    fail: function(xhr, textStatus, errorThrown){
-		       	displayError('Try again.');
-		    },
-		    error: function(data) {
-		    	displayError('There is an error occurred.');
-		    }     
-		});*/
-
-
 		if (toggle == 'store') {
 			$(form).submit();
 		} else {
@@ -312,25 +241,26 @@ $(function() {
 	}
 
 	$.fn.showEdit = function(id, type, otherParam = "") {
-		$("#modal-edit").modal()
-						.on('shown.bs.modal', function() {
-							deleteURL = $('#delete-url').val();
-							deleteForm = $('#form-delete').serialize();
-							$('.custom-file-input').on('change', function() { 
-							   	var fileName = $(this).val().split('\\').pop(); 
-							   	$(this).next('.custom-file-label')
-							   		   .addClass("selected")
-							   		   .html('<i class="fas fa-image"></i> ' + fileName); 
-							});
-						  }).on('hidden.bs.modal', function() {
-						      $('#edit-content').html(modalLoadingContent);
-						  }).css('overflow-y', 'auto');
+		$("#modal-edit").modal().on('shown.bs.modal', function() {
+			deleteURL = $('#delete-url').val();
+			deleteForm = $('#form-delete').serialize();
+			$('.custom-file-input').on('change', function() { 
+			   	var fileName = $(this).val().split('\\').pop(); 
+			   	$(this).next('.custom-file-label')
+			   		   .addClass("selected")
+			   		   .html('<i class="fas fa-image"></i> ' + fileName); 
+			});
+		}).on('hidden.bs.modal', function() {
+		    $('#edit-content').html(modalLoadingContent);
+		}).css('overflow-y', 'auto');
 
 		if (type == 'infosys') {
 			$('#edit-content').load('infosys/show-edit/' + id);
 		} else if (type == 'record') {
 			$("#modal-view").modal('hide');
-			$('#edit-content').load('records/show-edit/' + otherParam + '?id=' + id);
+			$('#edit-content').load('records/show-edit/' + otherParam + '?id=' + id, function() {
+                initSelect2Inputs();
+            });
 		}	
 	}
 
@@ -367,31 +297,6 @@ $(function() {
 	}
 
 	$.fn.delete = function() {
-		/* // For AJAX Approach
-		$.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-            }
-        });
-		$.ajax({
-		    url: deleteURL,
-		    type: 'post',
-		    data: {_token: $('meta[name=csrf-token]').attr('content')},
-		    success: function(response) {
-		    	$('#success-text').text(response);
-		    	$("#modal-success").modal();
-		        $("#modal-delete").modal('hide');
-		        
-		        refreshDefaults('all');
-		    },
-		    fail: function(xhr, textStatus, errorThrown){
-		       	displayError('Try again.');
-		    },
-		    error: function(data) {
-		    	displayError(data.responseText);
-		    }
-		});*/
-
 		$('#form-delete').submit();
 	}
 
@@ -403,8 +308,7 @@ $(function() {
 		$('#search-display').html('<div id="search-display" class="well">' +
                                   '<p class="grey-text">' +
                                   '<i class="fas fa-spinner fa-spin"></i> Searching...' +
-                            	  '</p></div>')
-
+                            	  '</p></div>');
 		if (_search > 0) {
 			$('#search-display').load('records/show-search?search=' + search);
 		} else {
@@ -449,10 +353,24 @@ $(function() {
 					.load(url);
 	}
 
+    $('#tab-add-edit-types').parent('li').click(function() {
+        $('#record-type-title').focus();
+    }).hover(function() {
+        $('#record-type-title').focus();
+    });
+
+    $('#sel-record-type').select2({
+        width: '100%'
+    });
+    $('#sel-record-type').on('change.select2', function() {
+        const recordType = $(this).val();
+		createRecordForm(recordType);
+    });
+    /*
 	$('#sel-record-type').unbind('change').change(function() {
 		var recordType = $(this).val();
-		createRecordForm(recordType);	
-	});
+		createRecordForm(recordType);
+	});*/
 
 	$('.tab-text').unbind('click').click(function() {
 		var tabID = $(this).attr('id');

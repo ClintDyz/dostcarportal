@@ -77,14 +77,27 @@
     <div class="md-form form-sm mt-0">
         <div class="well border p-2">
             @if (!empty($attachment))
-            <p>Attachment/s:</p>
+            <p>File Attachment/s:</p>
             @foreach($attachments as $file)
             <a class="btn-link btn-sm btn-block" target="_blank" 
                href="{{ asset($file->directory) }}" download>
                 {{ $file->filename }}
             </a>
             @endforeach
-            @else
+            <hr>
+            @endif
+
+            @if (!empty($attachmentURL))
+            <p>Link Attachment/s:</p>
+            @foreach($attachmentURLs as $url)
+            <a class="btn-link btn-sm btn-block" target="_blank" href="{{ $url }}" 
+               style="word-break: break-all;">
+                {{ $url }}
+            </a>
+            @endforeach
+            @endif
+
+            @if (empty($attachment) && empty($attachmentURL))
             <p class="red-text">No attachment/s</p>
             @endif
         </div>
