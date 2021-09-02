@@ -199,24 +199,65 @@
                     <!-- Add Record Types -->
                     <div class="tab-pane fade" id="add-edit-record-types" 
                          role="tabpanel" aria-labelledby="tab-add-edit-record-types">
-                        <div class="md-form m-0 p-3">
-                            <div class="md-form m-0 mt-3">
-                                <i class="fas fa-keyboard prefix"></i>
-                                <input type="text" id="record-type-title" name="record_title" class="form-control" required="">
-                                <label for="record-type-title" class="">
-                                    &nbsp;Record Type
-                                </label>
-                            </div> 
-                        </div>
+                        <form id="form-create-record-type" action="{{ route('store-record-type') }}" method="POST">
+                            {{ csrf_field() }}
+
+                            <div class="md-form m-0 p-3">
+                                <div class="md-form">
+                                    <i class="fas fa-keyboard prefix"></i>
+                                    <input type="text" id="r-type" name="r_type" class="form-control" required>
+                                    <label for="r-type" class="">
+                                        &nbsp;Record Type
+                                    </label>
+                                </div> 
+
+                                <div class="md-form">
+                                    <i class="fas fa-grip-horizontal prefix"></i>
+                                    <input type="text" id="r-icon" name="r_icon" class="form-control" value="far fa-file" required>
+                                    <label for="r-icon">
+                                        &nbsp;Record Type Icon
+                                    </label>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="form-action-record-type" value="{{ route('store-record-type') }}">
+                        </form>
                         <hr class="m-0">
                         <div class="table-responsive table-custom-height pl-5 pr-5 pt-3">
                             <div id="add-edit-types-display" class="well">
-                                <p class="grey-text"> Existing Record Types</p>
+                                <p>Existing Record Types:</p>
+                                <form id="form-update-record-type-order" action="{{ route('update-record-type-order') }}" method="POST">
+                                    {{ csrf_field() }}
+
+                                    <table class="table table-hover table-bordered table-fixed table-sm m-0 mb-4">
+                                        <tbody class="sortable">
+                                            @if (count($recordTypes) > 0)
+                                            @foreach ($recordTypes as $rType)
+                                                    @if ($rType->id != 1)
+                                            <tr onclick="$(this).showView('{{ $rType->id }}', 'record-type', '3');" class="cursor-pointer">
+                                                <td width="2%">
+                                                    <i class="fas fa-arrows-alt"></i>
+                                                    <input type="hidden" name="rec_id[]" value="{{ $rType->id }}">
+                                                </td>
+                                                <td>&nbsp;&nbsp;{{ $rType->type }}</td>
+                                            </tr>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </form>
                             </div>
                         </div>
-                        <button id="btn-add-edit-types" class="btn btn-success btn-md btn-block">
-                            <i class="fas fa-folder-plus"></i> Add
-                        </button>
+                        <div class="btn-group btn-block" role="group">
+                            <button onclick="$(this).store('#form-create-record-type', '#form-action-record-type');" 
+                                    class="btn btn-green btn-md">
+                                <i class="fas fa-folder-plus"></i> Add
+                            </button>
+                            <button onclick="$(this).updateRecordTypeOrder();" class="btn btn-orange btn-md">
+                                <i class="fas fa-align-right"></i> Update Order
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Add Records -->
@@ -243,7 +284,7 @@
                                 <p class="grey-text"> Please select a record type.</p>
                             </div>
                         </div>
-                        <button id="btn-add-record" class="btn btn-success btn-md btn-block">
+                        <button id="btn-add-record" class="btn btn-green btn-md btn-block">
                             <i class="fas fa-folder-plus"></i> Add
                         </button>
                     </div>
@@ -256,7 +297,7 @@
 		<div class="card trans-blue-bg z-depth-1 h-100">
 			<div class="card-body text-blue">
 				<div class="card-title text-white">
-					<strong><i class="fas fa-calendar-day"></i>  </strong>
+					<strong><i class="fas fa-calendar-day"></i>  Events</strong>
 				</div>
 				<div class="table-responsive table-custom-height-2 white">
 					<table class="table table-hover table-bordered table-sm m-0">
@@ -306,7 +347,8 @@
                         </tbody>
 					</table>
 				</div>
-				<p class="text-left text-white m-0 pt-3" style="font-size: 9pt;">
+                <hr>
+				<p class="text-left text-white m-0" style="font-size: 9pt;">
 					To view more memo, click 
                     <a target="_blank" href="https://trace.dostcar.ph/" 
                        class="text-default"> here</a> to login to TRACE.
@@ -524,6 +566,7 @@
     <script>
         let recordTypes = {!! json_encode($recordTypes) !!};
     </script>
+    <script type="text/javascript" src="{{ asset('js/jquery-ui.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/select2.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/js/portal.js') }}"></script>
 

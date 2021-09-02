@@ -11,7 +11,7 @@ use Auth;
 use DB;
 use File;
 
-class RecordsController extends Controller
+class RecordController extends Controller
 {
     /**
      * Create a new controller instance.

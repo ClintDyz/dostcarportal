@@ -17,4 +17,6 @@ class RecordType extends Model
     protected $fillable = [
         'type'
     ];
+
+    public $timestamps = false;
 }

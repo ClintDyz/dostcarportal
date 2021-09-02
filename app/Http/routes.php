@@ -34,20 +34,24 @@ Route::group(['middlewareGroups' => ['web']], function () {
     Route::post('accounts/delete/{id}', 'AccountController@deleteAccount');
 
     //Record Types
-    Route::get('record-types/show-create/{type}', 'RecordsController@showCreateForm');
-    Route::get('record-types/show-edit/{type}', 'RecordsController@showEditForm');
-    Route::post('record-types/store/{type}', 'RecordsController@store');
-    Route::post('record-types/update/{type}', 'RecordsController@update');
-    Route::post('record-types/delete/{id}', 'RecordsController@delete');
-    Route::post('record-types/delete-attachment/{id}', 'RecordsController@deleteAttachment');
+    Route::get('record-types/show-view/{id}', 'RecordTypeController@showRecordType');
+    Route::get('record-types/show-edit/{id}', 'RecordTypeController@showEditForm');
+    Route::post('record-types/store', 'RecordTypeController@store')
+         ->name('store-record-type');
+    Route::post('record-types/update/{id}', 'RecordTypeController@update')
+         ->name('update-record-type');
+    Route::post('record-types/update-order', 'RecordTypeController@updateOrder')
+         ->name('update-record-type-order');
+    Route::post('record-types/delete/{id}', 'RecordTypeController@delete')
+         ->name('delete-record-type');
 
     //Records
-    Route::get('records/show-create/{type}', 'RecordsController@showCreateForm');
-    Route::get('records/show-edit/{type}', 'RecordsController@showEditForm');
-    Route::post('records/store/{type}', 'RecordsController@store');
-    Route::post('records/update/{type}', 'RecordsController@update');
-    Route::post('records/delete/{id}', 'RecordsController@delete');
-    Route::post('records/delete-attachment/{id}', 'RecordsController@deleteAttachment');
+    Route::get('records/show-create/{type}', 'RecordController@showCreateForm');
+    Route::get('records/show-edit/{type}', 'RecordController@showEditForm');
+    Route::post('records/store/{type}', 'RecordController@store');
+    Route::post('records/update/{type}', 'RecordController@update');
+    Route::post('records/delete/{id}', 'RecordController@delete');
+    Route::post('records/delete-attachment/{id}', 'RecordController@deleteAttachment');
 
     //Infosys
     Route::get('infosys/show-infosys', 'InfosysController@showInfosys');
@@ -61,6 +65,6 @@ Route::group(['middlewareGroups' => ['web']], function () {
 /*------------------------- Public Routes -------------------------*/
 
 //Records
-Route::get('records/show-record/{type}', 'RecordsController@showRecord');
-Route::get('records/show-view/{type}', 'RecordsController@showView');
-Route::get('records/show-search', 'RecordsController@showSearchRecord');
+Route::get('records/show-record/{type}', 'RecordController@showRecord');
+Route::get('records/show-view/{type}', 'RecordController@showView');
+Route::get('records/show-search', 'RecordController@showSearchRecord');

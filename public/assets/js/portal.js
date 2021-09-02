@@ -141,48 +141,6 @@ $(function() {
 		});
 	}
 
-    function createRecordTypeForm(recordType) {
-		$('#add-record-display').load('records/show-create/' + recordType, function() {
-			var storeURL = $('#form-action').val();
-			var formValidator = $("#form-create-record").validate({
-				errorElement : 'div',
-				errorLabelContainer: '.error-msg',
-				rules: {
-			        record_title: {
-			            required: true
-			        },
-			        record_subject: {
-			            required: true
-			        }
-			    }
-			});
-
-			$('.custom-file-input').on('change', function() { 
-			   	var fileName = $(this).val().split('\\').pop(); 
-			   	$(this).next('.custom-file-label')
-			   		   .addClass("selected")
-			   		   .html('<i class="fas fa-image"></i> ' + fileName); 
-			   	//$('#btn-add-record').removeAttr('disabled');
-			});
-
-			if (recordType == 0) {
-				$('#btn-add-edit-types').unbind('click').click(function() {
-				});
-				$('#btn-add-record').unbind('click').click(function() {
-				});
-			} else {
-				$('#btn-add-record').unbind('click').click(function() {
-					var isValid = formValidator.form();
-					var form = "#form-create-record";
-
-					if (isValid) {
-						storeProcess(form, storeURL, 'store', 'record');
-					}
-				});
-			}	
-		});
-	}
-
 	function storeProcess(form, url, toggle) {
 		if (toggle == 'store') {
 			$(form).submit();
@@ -194,32 +152,37 @@ $(function() {
 	$.fn.showView = function(id, type, otherParam = "") {
 		if (type == 'record') {
 			$('#view-content').load('records/show-view/' + otherParam + '?id=' + id);
-			$("#modal-view").modal()
-							.on('shown.bs.modal', function() {
+			$("#modal-view").modal().on('shown.bs.modal', function() {
 
-							}).on('hidden.bs.modal', function() {
-							    $('#view-content').html(modalLoadingContent);
-							});
-		}
+			}).on('hidden.bs.modal', function() {
+			    $('#view-content').html(modalLoadingContent);
+			});
+		} else if (type == 'record-type') {
+            $('#view-content').load(`record-types/show-view/${id}`);
+            $("#modal-view").modal().on('shown.bs.modal', function() {
+
+			}).on('hidden.bs.modal', function() {
+			    $('#view-content').html(modalLoadingContent);
+			});
+        }
 	}
 
 	$.fn.showCreate = function() {
-		$("#modal-create").modal()
-						  .on('shown.bs.modal', function() {
-						  		$('.custom-file-input').on('change', function() { 
-								   	var fileName = $(this).val().split('\\').pop(); 
-								   	$(this).next('.custom-file-label')
-								   		   .addClass("selected")
-								   		   .html('<i class="fas fa-image"></i> ' + fileName); 
-								});
-						  }).on('hidden.bs.modal', function() {
-						      $('#create-content').html(modalLoadingContent);
-						  });
+		$("#modal-create").modal().on('shown.bs.modal', function() {
+            $('.custom-file-input').on('change', function() { 
+                var fileName = $(this).val().split('\\').pop(); 
+                $(this).next('.custom-file-label')
+                        .addClass("selected")
+                        .html('<i class="fas fa-image"></i> ' + fileName); 
+            });
+		}).on('hidden.bs.modal', function() {
+		    $('#create-content').html(modalLoadingContent);
+		});
 		$('#create-content').load('infosys/show-create');
 	}
 
-	$.fn.store = function() { 
-		var form = "#form-create";
+	$.fn.store = function(_form = '', _formAction = '') { 
+		var form = _form ? _form : "#form-create";
 		var formValidator = $(form).validate({
 			errorElement : 'div',
     		errorLabelContainer: '.error-msg',
@@ -235,7 +198,7 @@ $(function() {
 		var isValid = formValidator.form();
 
 		if (isValid) {
-			var storeURL = $('#form-action').val();
+			var storeURL = _formAction ? $(_formAction).val() : $('#form-action').val();
 			storeProcess(form, storeURL, 'store');
 		}
 	}
@@ -261,30 +224,40 @@ $(function() {
 			$('#edit-content').load('records/show-edit/' + otherParam + '?id=' + id, function() {
                 initSelect2Inputs();
             });
-		}	
+		} else if (type == 'record-type') {
+            $("#modal-view").modal('hide');
+            $('#edit-content').load('record-types/show-edit/' + id);
+        }
 	}
 
 	$.fn.update = function() {
-		var form = "#form-edit";
-		var formValidator = $(form).validate({
-								errorElement : 'div',
-	    						errorLabelContainer: '.error-msg',
-								rules: {
-							        infosys_name: {
-							            required: true
-							        },
-							        infosys_type: {
-							            required: true
-							        }
-							    }
-							});
-		var isValid = formValidator.form();
+		const form = "#form-edit";
+		const formValidator = $(form).validate({
+			errorElement : 'div',
+	    	errorLabelContainer: '.error-msg',
+			rules: {
+		        infosys_name: {
+		            required: true
+		        },
+		        infosys_type: {
+		            required: true
+		        }
+		    }
+		});
+		const isValid = formValidator.form();
 		
 		if (isValid) {
-			var editURL = $('#form-action').val();
+			const editURL = $('#form-action').val();
 			storeProcess(form, editURL, 'update');
 		}
 	}
+
+    $.fn.updateRecordTypeOrder = function() {
+        const form = "#form-update-record-type-order";
+        const editURL = $('#form-update-record-type-order').val();
+		
+        storeProcess(form, editURL, 'update');
+    }
 
 	$.fn.showDelete = function() {
 		$("#modal-edit").modal('hide');
@@ -362,19 +335,21 @@ $(function() {
     $('#sel-record-type').select2({
         width: '100%'
     });
+
     $('#sel-record-type').on('change.select2', function() {
         const recordType = $(this).val();
 		createRecordForm(recordType);
     });
-    /*
-	$('#sel-record-type').unbind('change').change(function() {
-		var recordType = $(this).val();
-		createRecordForm(recordType);
-	});*/
+
+    $('#btn-add-edit-record-types').click(function() {
+
+    });
 
 	$('.tab-text').unbind('click').click(function() {
 		var tabID = $(this).attr('id');
 		refreshRecordDisplay(tabID);
 		refreshDefaults('record');
 	});
+
+    $( ".sortable" ).sortable();
 });
