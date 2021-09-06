@@ -514,7 +514,6 @@
                                             <div class="view overlay zoom cursor-pointer">
                                                 <img class="card-img-top img-fluid" src="{{ url($info->icon) }}" alt="Icon">
                                             </div>
-                                            
                                         </a>
                                         <a class="btn btn-white btn-block waves-effect waves-light p-1"
                                             target="_blank" href="{{ $info->url }}">
@@ -527,7 +526,7 @@
                                                 <i class="fas fa-edit orange-text"></i>
                                             </a>
                                             @endif
-                                            <a class="btn btn-light waves-effect waves-light black-text p-1  w-50"
+                                            <a class="btn btn-light waves-effect waves-light black-text p-1 w-50"
                                                data-toggle="tooltip" data-placement="top" title="{{ $info->description }}">
                                                 <i class="fas fa-info-circle"></i>
                                             </a>
@@ -566,7 +565,6 @@
     <script>
         let recordTypes = {!! json_encode($recordTypes) !!};
     </script>
-    <script type="text/javascript" src="{{ asset('js/jquery-ui.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/select2.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/js/portal.js') }}"></script>
 

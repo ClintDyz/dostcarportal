@@ -352,4 +352,5 @@ $(function() {
 	});
 
     $( ".sortable" ).sortable();
+	$('[data-toggle="tooltip"]').tooltip();
 });
