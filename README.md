@@ -1,3 +1,5 @@
+![infosys-portal](https://user-images.githubusercontent.com/26521475/182554876-a6eb5afa-e3b1-4ffc-b99c-64241ce37aba.jpg)
+
 # Installation and Configuration
 
 1. Open command prompt or bash terminal.
