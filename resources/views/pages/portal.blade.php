@@ -82,8 +82,15 @@
 					   	</a>
 					</li>
                         @endforeach
+                        
+                    <a href="https://docs.google.com/spreadsheets/d/1RpQp4Zv2li95Ib5s6pwXXzGvun7iI8-zSVpeP0xnk4Q/edit?usp=sharing" target="_blank" class="{{ $rType->id == $firstRecordType ? ' active': '' }}
+                        nav-link tab-text"><i class="fas fa-file-contract"></i> T.O</a>
+                <a href="https://docs.google.com/spreadsheets/d/18njL1Nl31bX_E9_X1tX_sS0FPl1fxr-P46X1NFoaLrI/edit?usp=sharing" target="_blank" class="{{ $rType->id == $firstRecordType ? ' active': '' }}
+                        nav-link tab-text"><i class="fas fa-file-invoice"></i> Memo</a>
+                <a href="https://docs.google.com/spreadsheets/d/1Q7YHuT4mHC7MqEzMgpd0bBo4gpaI3eM7WIsrvl7JFoM/edit?usp=sharing" target="_blank" class="{{ $rType->id == $firstRecordType ? ' active': '' }}
+                        nav-link tab-text"><i class="fas fa-file-contract"></i> S.O</a>
+                 
                     @endif
-
                     <li class="nav-item">
                         <a class="nav-link tab-text" id="tab-search-record" 
                            data-toggle="tab" href="#search-record" role="tab" 
@@ -111,8 +118,7 @@
                         </a>
                     </li>
                     @endif
-				</ul>
-
+				</ul> 
 				<div class="tab-content white">
                     @if (count($recordTypes) > 0)
                         @foreach ($recordTypes as $rType)
